@@ -11,7 +11,7 @@ export class textApi{
      * @param textToFind TextToFind
      * @param fullCompare True/False. Default is True. If False partialComparision will be done
      */
-    async verifyText(page: any, textToFind: string, fullCompare = true) {
+    async textToVerify(page: any, textToFind: string, fullCompare = true) {
         // await page.waitForSelector(`text=${textToFind}`)
         const elements = await page.$$(`text=${textToFind}`)
         const elementLength = elements.length
@@ -29,7 +29,7 @@ export class textApi{
      * @param options
      *                  anchor:String -- String which can be used as an anchor to the element
      */
-    async clickText(page: any, textToClick: string, options = { anchor: "undefined" }) {
+    async textToClick(page: any, textToClick: string, options = { anchor: "undefined" }) {
         // const clickAnchor = "button, input, a >> css=input[attr=value] >> xpath=//text()[normalize-space(.)]"
         const elements = await page.$$(`text=${textToClick}`)
         // console.log("Click Elements::", elements);

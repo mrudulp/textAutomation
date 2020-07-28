@@ -41,85 +41,85 @@ describe('Test TextApi Integration', () => {
         await page.close();
         await context.clearCookies();
     });
-    describe('ClickText Tests', () => {
-        it('Test ClickText Functionality on Legacy Button', async function () {
+    describe('textToClick Tests', () => {
+        it('Test textToClick Functionality on Legacy Button', async function () {
             const tapi = new textApi()
             const textToClick = "<button type=button>"
             const textToVerify = "button type=button Clicked"
-            await tapi.clickText(page, textToClick)
-            const val = await tapi.verifyText(page, `${textToVerify}`)
+            await tapi.textToClick(page, textToClick)
+            const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
-        it('Test ClickText Functionality on Legacy Button using Anchor', async function () {
+        it('Test textToClick Functionality on Legacy Button using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "This is Button"
             const anchorText = "Just another Button"
-            const verifyText = "Just a Button Clicked"
-            // let val = await tapi.clickText(page, textToClick)
+            const textToVerify = "Just a Button Clicked"
+            // let val = await tapi.textToClick(page, textToClick)
             let val
             const options = { 'anchor': `${anchorText}` }
-            val = await tapi.clickText(page, textToClick, options)
-            val = await tapi.verifyText(page, `${verifyText}`)
+            val = await tapi.textToClick(page, textToClick, options)
+            val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
 
-        it('Test ClickText Functionality on Hyperlink', async function () {
+        it('Test textToClick Functionality on Hyperlink', async function () {
             const tapi = new textApi()
             const textToClick = "Visit Google"
             const textToVerify = "Google Search"
-            await tapi.clickText(page, textToClick)
-            const val = await tapi.verifyText(page, `${textToVerify}`)
+            await tapi.textToClick(page, textToClick)
+            const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
 
-        it('Test ClickText Functionality on HyperLink using Anchor', async function () {
+        it('Test textToClick Functionality on HyperLink using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "Not Google"
             const anchorText = "Just another Button"
-            const verifyText = "Search the web without being tracked"
-            // let val = await tapi.clickText(page, textToClick)
+            const textToVerify = "Search the web without being tracked"
+            // let val = await tapi.textToClick(page, textToClick)
             let val
             const options = { 'anchor': `${anchorText}` }
-            val = await tapi.clickText(page, textToClick, options)
-            val = await tapi.verifyText(page, `${verifyText}`)
+            val = await tapi.textToClick(page, textToClick, options)
+            val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
-        it('Test ClickText Functionality on Input of Type Button', async function () {
+        it('Test textToClick Functionality on Input of Type Button', async function () {
             const tapi = new textApi()
             const textToClick = "<input type=button>"
-            const verifyText = "input type=button"
-            await tapi.clickText(page, textToClick)
-            const val = await tapi.verifyText(page, `${verifyText} Clicked`)
+            const textToVerify = "input type=button"
+            await tapi.textToClick(page, textToClick)
+            const val = await tapi.textToVerify(page, `${textToVerify} Clicked`)
             expect(val).true
         });
 
-        it('Test ClickText Functionality on Input Button using Anchor', async function () {
+        it('Test textToClick Functionality on Input Button using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "<input type=button2>"
             const anchorText = "Just another Button"
-            const verifyText = "Just an Input Button Clicked"
-            // let val = await tapi.clickText(page, textToClick)
+            const textToVerify = "Just an Input Button Clicked"
+            // let val = await tapi.textToClick(page, textToClick)
             let val
             const options = { 'anchor': `${anchorText}` }
-            val = await tapi.clickText(page, textToClick, options)
-            val = await tapi.verifyText(page, `${verifyText}`)
+            val = await tapi.textToClick(page, textToClick, options)
+            val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
     });
 
-    describe('VerifyText Tests', () => {
-        it('Test VerifyText Functionality for Legacy Button', async function () {
+    describe('textToVerify Tests', () => {
+        it('Test textToVerify Functionality for Legacy Button', async function () {
             const tapi = new textApi()
             let textToVerify = "This is Button"
-            // let val = await tapi.clickText(page, textToClick)
-            const val = await tapi.verifyText(page, `${textToVerify}`)
+            // let val = await tapi.textToClick(page, textToClick)
+            const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
 
-        it('Test VerifyText Functionality for Hyperlink Element', async function () {
+        it('Test textToVerify Functionality for Hyperlink Element', async function () {
             const tapi = new textApi()
             const textToVerify = "This is a text link"
-            const val = await tapi.verifyText(page, `${textToVerify}`)
+            const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
     });

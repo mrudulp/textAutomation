@@ -8,15 +8,15 @@ let page, browser, context
 async function testVerifyText(page:any) {
     const tapi = new textApi();
     let textToVerify = "Blockquotes"
-    let val = await tapi.verifyText(page, textToVerify)
+    let val = await tapi.textToVerify(page, textToVerify)
     console.log("Text found::", val);
     assert.ok(val)
 
     textToVerify = "Greek paragraphos"
-    val = await tapi.verifyText(page, textToVerify)
+    val = await tapi.textToVerify(page, textToVerify)
     console.log("Text found::", val);
     assert.equal(val, false)
-    val = await tapi.verifyText(page, textToVerify, false)
+    val = await tapi.textToVerify(page, textToVerify, false)
     console.log("Text found::", val);
     assert.equal(val, true)
 }
@@ -25,8 +25,8 @@ async function testClickText(page: any) {
     const tapi = new textApi()
     const textToClick = "Visit Google"
     const textToVerify = "Google Search"
-    await tapi.clickText(page, textToClick)
-    const val = await tapi.verifyText(page, `${textToVerify}`)
+    await tapi.textToClick(page, textToClick)
+    const val = await tapi.textToVerify(page, `${textToVerify}`)
     console.log(val)
 }
 
