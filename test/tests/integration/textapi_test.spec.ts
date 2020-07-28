@@ -19,7 +19,7 @@ describe('Test TextApi Integration', () => {
 
     before(async () => {
         // Initialising AutoIt
-        browser = await chromium.launch({ headless: true, slowMo: 50 });
+        browser = await chromium.launch({ headless: false, slowMo: 50 });
         // Create a context
         context = await browser.newContext({ acceptDownloads: true });
         // browser.ov
@@ -41,8 +41,8 @@ describe('Test TextApi Integration', () => {
         await page.close();
         await context.clearCookies();
     });
-    describe('textToClick Tests', () => {
-        it('Test textToClick Functionality on Legacy Button', async function () {
+    describe('textToClick Test', () => {
+        it('On Legacy Button', async function () {
             const tapi = new textApi()
             const textToClick = "<button type=button>"
             const textToVerify = "button type=button Clicked"
@@ -50,7 +50,7 @@ describe('Test TextApi Integration', () => {
             const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
-        it('Test textToClick Functionality on Legacy Button using Anchor', async function () {
+        it('On Legacy Button using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "This is Button"
             const anchorText = "Just another Button"
@@ -63,28 +63,30 @@ describe('Test TextApi Integration', () => {
             expect(val).true
         });
 
-        it('Test textToClick Functionality on Hyperlink', async function () {
+        it('On Hyperlink', async function () {
             const tapi = new textApi()
             const textToClick = "Visit Google"
             const textToVerify = "Google Search"
-            await tapi.textToClick(page, textToClick)
+            // await tapi.textToClick(page, textToClick)
+            await Promise.all([tapi.textToClick(page, textToClick), page.waitForNavigation()]);
             const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
 
-        it('Test textToClick Functionality on HyperLink using Anchor', async function () {
+        it('On HyperLink using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "Not Google"
             const anchorText = "Just another Button"
-            const textToVerify = "Search the web without being tracked"
+            const textToVerify = "Tired of being tracked online? "
+            // const textToVerify = "Tired of being tracked online? We can help."
             // let val = await tapi.textToClick(page, textToClick)
             let val
             const options = { 'anchor': `${anchorText}` }
-            val = await tapi.textToClick(page, textToClick, options)
+            val = await Promise.all([tapi.textToClick(page, textToClick, options), page.waitForNavigation()]).catch(e=>console.error("Error is::",e) );
             val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
-        it('Test textToClick Functionality on Input of Type Button', async function () {
+        it('On Input of Type Button', async function () {
             const tapi = new textApi()
             const textToClick = "<input type=button>"
             const textToVerify = "input type=button"
@@ -93,7 +95,7 @@ describe('Test TextApi Integration', () => {
             expect(val).true
         });
 
-        it('Test textToClick Functionality on Input Button using Anchor', async function () {
+        it('On Input Button using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "<input type=button2>"
             const anchorText = "Just another Button"
@@ -105,10 +107,13 @@ describe('Test TextApi Integration', () => {
             val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
+
+        it('On Input Searching with placeholder text');
+        it('On Input using only Anchor element');
     });
 
-    describe('textToVerify Tests', () => {
-        it('Test textToVerify Functionality for Legacy Button', async function () {
+    describe('textToVerify Test', () => {
+        it('On Legacy Button', async function () {
             const tapi = new textApi()
             let textToVerify = "This is Button"
             // let val = await tapi.textToClick(page, textToClick)
@@ -116,7 +121,7 @@ describe('Test TextApi Integration', () => {
             expect(val).true
         });
 
-        it('Test textToVerify Functionality for Hyperlink Element', async function () {
+        it('On Hyperlink Element', async function () {
             const tapi = new textApi()
             const textToVerify = "This is a text link"
             const val = await tapi.textToVerify(page, `${textToVerify}`)

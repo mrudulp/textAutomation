@@ -1,4 +1,3 @@
-import { searchTextEngine } from './searchEngine';
 import { textApi } from './textapi'
 import { strict as assert } from 'assert';
 
@@ -30,6 +29,16 @@ async function testClickText(page: any) {
     console.log(val)
 }
 
+async function testClickTextBare(page: any) {
+    const textToClick = "Visit Google"
+    const textToVerify = "Google Search"
+    const elements = await page.$$(`text=${textToClick}`)
+    await elements[0].click();
+    const verifyElements = await page.$$(`text=${textToVerify}`)
+    const elementLength = verifyElements.length
+    console.log("Element Length::",elementLength, ":: TexToFind::",textToVerify)
+}
+
 (async () => {
     // Create a context
     // Create a page.
@@ -40,9 +49,7 @@ async function testClickText(page: any) {
     const url = "file:///C:/Users/MrudulPendharkar/devel/devspace/js/textAutomation/test/src/sampleApp.html"
 
     await page.goto(url);
-    // const anchorText = "JPD Sisäänkirjautuminen";
-    // await findNearestElementAndClick(page)
-    // await testVerifyText(page)
-    await testClickText(page)
+    // await testClickText(page)
+    await testClickTextBare(page)
     await browser.close()
 })().catch(e=>console.error("Error is::",e));
