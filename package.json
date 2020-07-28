@@ -1,0 +1,32 @@
+{
+  "name": "textautomation",
+  "version": "0.0.1",
+  "description": "Text Automation core",
+  "main": "main.js",
+  "scripts": {
+    "start": "node src/init.js",
+    "test": "mocha"
+  },
+  "keywords": [
+    "text",
+    "automation",
+    "playwright"
+  ],
+  "author": "MP",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
+    "chai": "^4.2.0",
+    "eslint": "^7.5.0",
+    "mocha": "^8.0.1",
+    "mochawesome-screenshots": "^1.7.3",
+    "nyc": "^15.1.0",
+    "playwright": "^1.2.0",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.7"
+  },
+  "dependencies": {}
+}
