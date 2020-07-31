@@ -15,7 +15,7 @@ async function testVerifyText(page:any) {
     val = await tapi.textToVerify(page, textToVerify)
     console.log("Text found::", val);
     assert.equal(val, false)
-    val = await tapi.textToVerify(page, textToVerify, false)
+    val = await tapi.textToVerify(page, textToVerify)
     console.log("Text found::", val);
     assert.equal(val, true)
 }

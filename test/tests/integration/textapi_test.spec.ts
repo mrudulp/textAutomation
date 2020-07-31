@@ -9,17 +9,19 @@ let browser: import('playwright').Browser;
 let context: import('playwright').BrowserContext;
 // let textApi: import('../../src/textapi').textApi;
 // let expect: import('chai');
-import {firefox, chromium} from 'playwright'
+import { firefox, chromium } from 'playwright'
 import { textApi } from '../../../src/textapi'
 import { expect } from 'chai';
 import 'mocha';
+
+
 
 describe('Test TextApi Integration', () => {
     const url = "file:///C:/Users/MrudulPendharkar/devel/devspace/js/textAutomation/test/src/sampleApp.html"
 
     before(async () => {
         // Initialising AutoIt
-        browser = await chromium.launch({ headless: false, slowMo: 50 });
+        browser = await chromium.launch({ headless: false, slowMo: 10 });
         // Create a context
         context = await browser.newContext({ acceptDownloads: true });
         // browser.ov
@@ -37,10 +39,15 @@ describe('Test TextApi Integration', () => {
         await page.goto(url);
     });
 
-    afterEach(async () => {
+
+
+    afterEach(async function handleEachTest() {
+        if (this.currentTest?.state === "failed") {
+            await page.screenshot({path: 'screenshot_failed.png'})
+        }
         await page.close();
         await context.clearCookies();
-    });
+    })
     describe('textToClick Test', () => {
         it('On Legacy Button', async function () {
             const tapi = new textApi()
@@ -53,12 +60,11 @@ describe('Test TextApi Integration', () => {
         it('On Legacy Button using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "This is Button"
-            const anchorText = "Just another Button"
+            const textForAnchor = "Just another Button"
             const textToVerify = "Just a Button Clicked"
             // let val = await tapi.textToClick(page, textToClick)
             let val
-            const options = { 'anchor': `${anchorText}` }
-            val = await tapi.textToClick(page, textToClick, options)
+            val = await tapi.textToClick(page, textToClick, {anchorText: `${textForAnchor}`})
             val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
@@ -68,7 +74,10 @@ describe('Test TextApi Integration', () => {
             const textToClick = "Visit Google"
             const textToVerify = "Google Search"
             // await tapi.textToClick(page, textToClick)
-            await Promise.all([tapi.textToClick(page, textToClick), page.waitForNavigation()]);
+            await Promise.all([
+                page.waitForNavigation({waitUntil:"networkidle"}),
+                await tapi.textToClick(page, textToClick),
+            ]);
             const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
@@ -76,16 +85,16 @@ describe('Test TextApi Integration', () => {
         it('On HyperLink using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "Not Google"
-            const anchorText = "Just another Button"
-            const textToVerify = "Tired of being tracked online? "
-            // const textToVerify = "Tired of being tracked online? We can help."
-            // let val = await tapi.textToClick(page, textToClick)
-            let val
-            const options = { 'anchor': `${anchorText}` }
-            val = await Promise.all([tapi.textToClick(page, textToClick, options), page.waitForNavigation()]).catch(e=>console.error("Error is::",e) );
-            val = await tapi.textToVerify(page, `${textToVerify}`)
+            const textForAnchor = "Just another Button"
+            const textToVerify = "Tired of being tracked online?"
+
+            await Promise.all([
+                page.waitForNavigation({waitUntil:"networkidle"}),
+                await tapi.textToClick(page, textToClick, {anchorText: `${textForAnchor}`}),
+            ])
+            const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
-        });
+        })
         it('On Input of Type Button', async function () {
             const tapi = new textApi()
             const textToClick = "<input type=button>"
@@ -98,18 +107,16 @@ describe('Test TextApi Integration', () => {
         it('On Input Button using Anchor', async function () {
             const tapi = new textApi()
             const textToClick = "<input type=button2>"
-            const anchorText = "Just another Button"
+            const textForAnchor = "Just another Button"
             const textToVerify = "Just an Input Button Clicked"
             // let val = await tapi.textToClick(page, textToClick)
             let val
-            const options = { 'anchor': `${anchorText}` }
-            val = await tapi.textToClick(page, textToClick, options)
+            val = await tapi.textToClick(page, textToClick, {anchorText: `${textForAnchor}`})
             val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
 
-        it('On Input Searching with placeholder text');
-        it('On Input using only Anchor element');
+        it('On Div Menus');
     });
 
     describe('textToVerify Test', () => {
@@ -128,4 +135,37 @@ describe('Test TextApi Integration', () => {
             expect(val).true
         });
     });
+
+    describe('fillText Test', () => {
+        it('On Input Searching with placeholder text');
+        it('On Input using only Anchor element');
+        it('On TextArea', async () => {
+            const placeholder = "Enter your message here"
+            const textToEnter = "Hello World"
+            const tapi = new textApi()
+            await tapi.enterText(page, textToEnter, placeholder)
+            const element = await page.$(`[placeholder='${placeholder}']`)
+            const val = await element!.evaluate((e:any) => e.value)
+            // const val = await tapi.textToVerify(page, `${textToEnter}`)
+            expect(val).equal(textToEnter)
+        })
+        it('On Password field');
+        it('On Calendar Element');
+        it('On Input like Div Element');// innerHTML to append
+        it('On [contenteditable] Element');
+    });
+
+    describe('Slider Test', () => {
+        it('On Simple Slider')
+    })
+
+    describe('Select Test', () => {
+        it('On Div Selects');
+        it('On Regular Selects');
+    })
+
+    describe('OptionsOrCheckbox Test', () => {
+        it('On Option Button');
+        it('On Checkbox');
+    })
 });
