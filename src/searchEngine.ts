@@ -12,11 +12,12 @@ export class searchTextEngine{
     /**
     Returns center of the rect provided
     */
-    getCenter(rect: any) {
+    getCenter(rect: any, xOffset:any, yOffset:any) {
         // console.log("Center::",rect)
+        // Do not add width and height as element size can be different resulting in unpredictable behaviour
         return {
-            x:rect.x + rect.width/2,
-            y:rect.y + rect.height/2
+            x:rect.x + xOffset,
+            y:rect.y + yOffset
         }
     }
 
@@ -57,8 +58,11 @@ export class searchTextEngine{
      * @param elements
      */
     async getClosestElementIndex(anchorElement: any, elements: any) {
+        // scrolling to anchor element which should bring actual element in viewport as well
+        await this.scrollIntoView(anchorElement)
         const anchorBox = await this.getBoundingBoxes(anchorElement)
-        const anchorCenter = this.getCenter(anchorBox)
+        const pageOffsets = await this.getPageOffsets(anchorElement)
+        const anchorCenter = this.getCenter(anchorBox, pageOffsets.pageXOffset, pageOffsets.pageYOffset)
         // console.log("Center is:: ", anchorCenter);
         // console.log("Elements are :: ", elements)
         const ctae = Array.from(elements)
@@ -70,13 +74,32 @@ export class searchTextEngine{
                 )
             )
         // console.log(ctae_boxes);
-        const ctae_centers = ctae_boxes.map(x => this.getCenter(x))
+        const ctae_centers = ctae_boxes.map(x => {
+            return this.getCenter(x, pageOffsets.pageXOffset, pageOffsets.pageYOffset)
+        }, pageOffsets)
+        // console.log("Centers::",ctae_centers)
         const distances: number[] = ctae_centers.map(x => this.getDistance(x, anchorCenter))
+        // console.log("Dis::", distances)
         const min =Math.min(...distances)
         const minIndex = distances.findIndex((x) => x === min)
         return minIndex
     }
 
+    async scrollIntoView(element: any) {
+        await element.evaluate( (e: any) => {
+            e.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        });
+    }
+
+    async getPageOffsets(element: any) {
+        const pageXOffset = await element.evaluate(()=>window.pageXOffset)
+        const pageYOffset = await element.evaluate(()=>window.pageYOffset)
+        const pageoffsets = {
+            pageXOffset: pageXOffset,
+            pageYOffset: pageYOffset
+        }
+        return pageoffsets
+    }
     /**
     Logs provided Object to console
     */

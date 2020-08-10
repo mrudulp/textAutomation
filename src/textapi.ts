@@ -1,12 +1,13 @@
 import { searchTextEngine } from './searchEngine';
 import { strict as assert } from 'assert';
-import {VerifyTextOptions, ClickTextOptions, FillTextOptions } from './types/textapitypes'
+import {VerifyTextOptions, ClickTextOptions, EnterTextOptions } from './types/textapitypes'
 
 export class textApi{
     ste: searchTextEngine;
     constructor() {
         this.ste = new searchTextEngine();
     }
+
     /**
      *
      * @param textToFind TextToFind
@@ -48,9 +49,33 @@ export class textApi{
         }
     }
 
-    async enterText(page: any, textToEnter: string, textToFind: string, options?: FillTextOptions) {
-        // const elements = await page.$$(`${textToFind}`)
-        // await elements[0].fill(textToEnter)
-        await page.fill(`[placeholder='${textToFind}']`, textToEnter)
+    async enterText(page: any, textToEnter: string, options?: EnterTextOptions) {
+        const elementByPlaceholder = await page.$(`[placeholder='${options?.textToFind}']`)
+        const elementByValue = await page.$(`[value='${options?.textToFind}']`)
+        if (elementByPlaceholder) {
+            if (options?.clearText !== undefined)
+                await elementByPlaceholder.fill('')
+            await elementByPlaceholder.fill(textToEnter)
+        }
+        else if (elementByValue) {
+            if (options?.clearText !== undefined)
+                await elementByPlaceholder.fill('')
+            await elementByValue.fill(textToEnter)
+        }
+        else if (options?.anchorText !== undefined) {
+            const elements = await page.$$("\
+            input[type = email], input[type = number], input[type = password], \
+            input[type = search], input[type=tel], input[type=text], input[type=url], textarea")
+
+            const anchorElements = await page.$$(`text ="${options?.anchorText}"`)
+
+            assert.equal(anchorElements.length , 1, "Anchor needs to be unique &/or valid")
+            const anchorElement = anchorElements[0]
+            const minIndex = await this.ste.getClosestElementIndex(anchorElement, elements)
+            const element = elements[minIndex]
+            if (options?.clearText !== undefined)
+                await element.fill('')
+            await element.fill(textToEnter)
+        }
     }
 }

@@ -21,7 +21,7 @@ describe('Test TextApi Integration', () => {
 
     before(async () => {
         // Initialising AutoIt
-        browser = await chromium.launch({ headless: false, slowMo: 10 });
+        browser = await chromium.launch({ headless: false, slowMo: 10, args: ['--start-fullscreen']  });
         // Create a context
         context = await browser.newContext({ acceptDownloads: true });
         // browser.ov
@@ -136,20 +136,44 @@ describe('Test TextApi Integration', () => {
         });
     });
 
-    describe('fillText Test', () => {
+    describe('enterText Test', () => {
         it('On Input Searching with placeholder text');
         it('On Input using only Anchor element');
         it('On TextArea', async () => {
             const placeholder = "Enter your message here"
             const textToEnter = "Hello World"
             const tapi = new textApi()
-            await tapi.enterText(page, textToEnter, placeholder)
+            await tapi.enterText(page, textToEnter, {textToFind:placeholder})
             const element = await page.$(`[placeholder='${placeholder}']`)
             const val = await element!.evaluate((e:any) => e.value)
             // const val = await tapi.textToVerify(page, `${textToEnter}`)
             expect(val).equal(textToEnter)
         })
-        it('On Password field');
+
+        it('On TextArea using Anchor', async () => {
+            const anchorText = "This is Textarea"
+            const placeholder = "Enter your message here"
+            const textToEnter = "Hello World"
+            const tapi = new textApi()
+            // await tapi.enterText(page, textToEnter, { anchorText: anchorText })
+            await tapi.enterText(page, textToEnter, { anchorText: anchorText }).catch(e => console.log(e))
+            const element = await page.$(`[placeholder='${placeholder}']`)
+            const val = await element!.evaluate((e:any) => e.value)
+            // const val = await tapi.textToVerify(page, `${textToEnter}`)
+            expect(val).equal(textToEnter)
+        })
+        it('On Password field using Anchor', async () => {
+            const anchorText = "Password"
+            const placeholder = "Type your Password"
+            const textToEnter = "Hello World"
+            const tapi = new textApi()
+            // await tapi.enterText(page, textToEnter, { anchorText: anchorText })
+            await tapi.enterText(page, textToEnter, { anchorText: anchorText }).catch(e => console.log(e))
+            const element = await page.$(`[placeholder='${placeholder}']`)
+            const val = await element!.evaluate((e:any) => e.value)
+            // const val = await tapi.textToVerify(page, `${textToEnter}`)
+            expect(val).equal(textToEnter)
+        })
         it('On Calendar Element');
         it('On Input like Div Element');// innerHTML to append
         it('On [contenteditable] Element');

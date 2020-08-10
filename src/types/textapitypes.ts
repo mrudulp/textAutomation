@@ -1,11 +1,14 @@
 export interface VerifyTextOptions{
-    fullCompare?:boolean
+    fullCompare?: boolean
+    anchorText?:string
 }
 
 export interface ClickTextOptions{
     anchorText?:string
 }
 
-export interface FillTextOptions{
-    anchorText?:string
+export interface EnterTextOptions{
+    anchorText?: string,
+    textToFind?: string,
+    clearText?:boolean
 }
