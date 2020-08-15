@@ -1,8 +1,11 @@
+// @ts-check
+/** @type {import('playwright').Page} */
 import { searchTextEngine } from './searchEngine';
 import { strict as assert } from 'assert';
-import {VerifyTextOptions, ClickTextOptions, EnterTextOptions } from './types/textapitypes'
+import {VerifyTextOptions, ClickTextOptions, EnterTextOptions, InputElementOptions } from './types/textapitypes'
+import { Page } from 'playwright';
 
-export class textApi{
+export class textApi {
     ste: searchTextEngine;
     constructor() {
         this.ste = new searchTextEngine();
@@ -10,13 +13,15 @@ export class textApi{
 
     /**
      *
-     * @param textToFind TextToFind
-     * @param fullCompare True/False. Default is True. If False partialComparision will be done
+     * @param page      Handle to Page
+     * @param textToFind    TextToFind
+     * @param options   Optional parameters to determie operations. Check VerifyTextOptions for more information
      */
-    async textToVerify(page: any, textToFind: string, options?:VerifyTextOptions) {
+    async textToVerify(page: Page, textToFind: string, options?: VerifyTextOptions) {
+
         const elements = await page.$$(`text=${textToFind}`)
         const elementLength = elements.length
-        console.log("Element Length::",elementLength, ":: TexToFind::",textToFind)
+        console.log("Element Length::", elementLength, ":: TexToFind::", textToFind)
         if (elementLength)
             return true
         else
@@ -25,57 +30,127 @@ export class textApi{
 
     /**
      *
-     * @param page
-     * @param textToClick
+     * @param page      Handle to Page
      * @param options
-     *                  anchor:String -- String which can be used as an anchor to the element
      */
-    async textToClick(page: any, textToClick: string, options?:ClickTextOptions ) {
-        const elements = await page.$$(`text=${textToClick}`)
+    async textToClick(page: Page, options?: ClickTextOptions) {
+        let elements: any = []
+        if (options?.textToClick !== undefined) {
+            elements = await page.$$(`text=${options?.textToClick}`)
+        } else if (options?.type !== undefined) {
+            const typetext = `[type="${options?.type}"]`
+            elements = await page.$$(typetext)
+        }
         const elementLength = elements.length
         let element
         if (elementLength >= 1) {
             if (options?.anchorText === undefined) {
-                assert.equal(elementLength,1, "Found More than one Element to click, Provide an anchor to determine which element to click")
+                assert.equal(elementLength, 1, "Found More than one Element to click, Provide an anchor to determine which element to click")
                 element = elements[0]
             } else if (options?.anchorText !== undefined) {
-                const anchorElements = await page.$$(`text =${options?.anchorText}`)
-                assert.equal(anchorElements.length , 1, "Anchor needs to be unique &/or valid")
-                const anchorElement = anchorElements[0]
-                const minIndex = await this.ste.getClosestElementIndex(anchorElement, elements)
-                element = elements[minIndex]
+                element = await this.ste.getClosestElement(page, options.anchorText, elements);
             }
-        await element.click();
+            await element.click();
         }
     }
 
-    async enterText(page: any, textToEnter: string, options?: EnterTextOptions) {
+    /**
+     *
+     * @param page      Handle to Page
+     * @param textToEnter
+     * @param options Element can be found using attributes placeholder, value or anchorText
+     *  Works only with input & textarea. Following input types are supported
+     *  input[type = email], input[type = number], input[type = password]
+     *  input[type = search], input[type=tel], input[type=text], input[type=url]
+     */
+    async enterText(page: Page, textToEnter: string, options?: EnterTextOptions) {
+        let element:any
         const elementByPlaceholder = await page.$(`[placeholder='${options?.textToFind}']`)
         const elementByValue = await page.$(`[value='${options?.textToFind}']`)
         if (elementByPlaceholder) {
-            if (options?.clearText !== undefined)
-                await elementByPlaceholder.fill('')
-            await elementByPlaceholder.fill(textToEnter)
+            element = elementByPlaceholder
         }
         else if (elementByValue) {
-            if (options?.clearText !== undefined)
-                await elementByPlaceholder.fill('')
-            await elementByValue.fill(textToEnter)
+            element = elementByValue
         }
         else if (options?.anchorText !== undefined) {
+            /* Finding nearest element based on anchor text */
             const elements = await page.$$("\
             input[type = email], input[type = number], input[type = password], \
             input[type = search], input[type=tel], input[type=text], input[type=url], textarea")
 
-            const anchorElements = await page.$$(`text ="${options?.anchorText}"`)
-
-            assert.equal(anchorElements.length , 1, "Anchor needs to be unique &/or valid")
-            const anchorElement = anchorElements[0]
-            const minIndex = await this.ste.getClosestElementIndex(anchorElement, elements)
-            const element = elements[minIndex]
-            if (options?.clearText !== undefined)
-                await element.fill('')
-            await element.fill(textToEnter)
+            element = await this.ste.getClosestElement(page, options.anchorText, elements)
         }
+        if (options?.clearText !== undefined)
+            await element.fill('')
+        await element.fill(textToEnter)
+    }
+    /**
+     *
+     * @param page
+     * @param options
+     *  For Input type=image -- options.alt
+     *  For Input type=checkbox -- options.type=checkbox & options.anchor=anchorText
+     *  For Input type=radio -- options.type=radio & options.anchor=anchorText
+     *  For Input type=text,tel,number,url,search,password,email -- options.placeholder=placeholderText
+     *  For Input type=button -- options.value=button, reset, submit
+     *  For Input type=range -- options.type=range & options.anchor=anchorText
+     */
+    async getInputElementValue(page: Page, options: InputElementOptions) {
+        let element: any
+        let elements: any = []
+        if (options.placeholder !== undefined) {
+            element = await page.$(`[placeholder='${options?.placeholder}']`)
+        }
+        if (options.value !== undefined) {
+            element = await page.$(`[value='${options?.value}']`)
+        }
+        if (options.alt !== undefined) {
+            element = await page.$(`[alt='${options?.alt}']`)
+        }
+        if (options.type !== undefined) {
+            elements = await page.$$(`[type='${options.type}']`)
+        }
+        if (options.index !== undefined) {
+            element = elements[options.index - 1]
+        }
+        if (options.anchorText !== undefined) {
+            if (elements.length == 0)
+                elements = await page.$$("input, textarea")
+            element = await this.ste.getClosestElement(page, options.anchorText, elements)
+        }
+        if (options.type === "checkbox" || options.type === "radio") {
+            return await element!.evaluate((e: any) => e.checked)
+        } else {
+            return await element!.evaluate((e: any) => e.value)
+        }
+        // const elements = await page.$$("input, textarea")
+    }
+
+    async getRangeValue(page: Page, options: InputElementOptions) {
+        let element: any
+        let elements = await page.$$('[type="range"]')
+
+        if (options.index !== undefined) {
+            element = elements[options.index - 1]
+        } else if (options.anchorText !== undefined) {
+            element = await this.ste.getClosestElement(page, options.anchorText, elements)
+        }
+        return await element!.evaluate((e: any) => e.value)
+    }
+
+    async setRangeValue(page: Page, options: InputElementOptions) {
+        /**
+         * Todo: Check if we can merge this function to enterText.
+         */
+        let element:any
+        let elements:any = []
+        elements = await page.$$("[type='range']")
+        if (options.index !== undefined) {
+            element = elements[options.index]
+        } else if (options.anchorText !== undefined) {
+            element = await this.ste.getClosestElement(page, options.anchorText, elements)
+        }
+        return await element.evaluate((e:any, value:any)=>e.value = value,options.value)
     }
 }

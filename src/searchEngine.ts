@@ -1,5 +1,17 @@
+import { Page } from "playwright";
+import { strict as assert } from 'assert';
+
+/** @type {import('playwright').Page} */
+// @ts-check
 export class searchTextEngine{
 
+    async getClosestElement(page: Page, anchorText:string, elements: any) {
+        const anchorElements = await page.$$(`text =${anchorText}`);
+        assert.equal(anchorElements.length, 1, "Anchor needs to be unique &/or valid");
+        const anchorElement = anchorElements[0];
+        const minIndex = await this.getClosestElementIndex(anchorElement, elements);
+        return elements[minIndex];
+    }
     /**
      *
      * @param element
@@ -27,10 +39,10 @@ export class searchTextEngine{
      * @param page
      * @param anchorText
      */
-   async getAnchorWithText(page:any, anchorText:any)  {
+   async getAnchorWithText(page: Page, anchorText:any)  {
         const anchorSelector = `(//body//*[normalize-space(text())='${anchorText}'])`
        const anchorElement = await page.$(anchorSelector);
-       const anchorElementBox = await anchorElement.boundingBox();
+       const anchorElementBox = await anchorElement!.boundingBox();
        return anchorElementBox
     }
 
@@ -39,7 +51,7 @@ export class searchTextEngine{
     We rely on anchor to help us locate exact link/button etc.. element
     that needs an action
     */
-   async getAllElementsWithText (page:any, elementText:any) {
+   async getAllElementsWithText (page: Page, elementText:any) {
         const anchorSelector = `(//body//*[normalize-space(text())='${elementText}' or @value='${elementText}'])`
        const selectors = await page.$$(anchorSelector)
         return selectors
