@@ -2,7 +2,11 @@
 /** @type {import('playwright').Page} */
 import { searchTextEngine } from './searchEngine';
 import { strict as assert } from 'assert';
-import {VerifyTextOptions, ClickTextOptions, EnterTextOptions, InputElementOptions } from './types/textapitypes'
+import {
+    VerifyTextOptions, ClickTextOptions,
+    EnterTextOptions, InputElementOptions,
+    SelectOptions, ElementValueOptions
+} from './types/textapitypes'
 import { Page } from 'playwright';
 
 export class textApi {
@@ -35,6 +39,7 @@ export class textApi {
      */
     async textToClick(page: Page, options?: ClickTextOptions) {
         let elements: any = []
+        let element
         if (options?.textToClick !== undefined) {
             elements = await page.$$(`text=${options?.textToClick}`)
         } else if (options?.type !== undefined) {
@@ -42,16 +47,21 @@ export class textApi {
             elements = await page.$$(typetext)
         }
         const elementLength = elements.length
-        let element
-        if (elementLength >= 1) {
-            if (options?.anchorText === undefined) {
-                assert.equal(elementLength, 1, "Found More than one Element to click, Provide an anchor to determine which element to click")
-                element = elements[0]
+        if (elementLength > 1) {
+            if (options?.index !== undefined) {
+                element = elements[options.index-1]
             } else if (options?.anchorText !== undefined) {
                 element = await this.ste.getClosestElement(page, options.anchorText, elements);
+            } else {
+                assert.equal(elementLength, 1, "Found More than one Element to click, Provide an anchor or index to determine which element to click")
             }
-            await element.click();
+        } else if (elementLength==1){
+            element = elements[0]
+        } else {
+            console.log("ClickText:: NO ELEMENT FOUND... IGNORING & RETURNING")
+            return
         }
+        await element.click();
     }
 
     /**
@@ -72,6 +82,12 @@ export class textApi {
         }
         else if (elementByValue) {
             element = elementByValue
+        }
+        else if (options?.index !== undefined) {
+            const elements = await page.$$("\
+            input[type = email], input[type = number], input[type = password], \
+            input[type = search], input[type=tel], input[type=text], input[type=url], textarea")
+            element = elements[options.index-1]
         }
         else if (options?.anchorText !== undefined) {
             /* Finding nearest element based on anchor text */
@@ -152,5 +168,29 @@ export class textApi {
             element = await this.ste.getClosestElement(page, options.anchorText, elements)
         }
         return await element.evaluate((e:any, value:any)=>e.value = value,options.value)
+    }
+
+    async selectText(page: Page, options: SelectOptions) {
+        let element:any
+        let elements:any = []
+        elements = await page.$$("select")
+        if (options.index !== undefined) {
+            element = elements[options.index]
+        } else if (options.anchorText !== undefined) {
+            element = await this.ste.getClosestElement(page, options.anchorText, elements)
+        }
+        element.selectOption(options.selectText)
+        return await element.evaluate((e:any, value:any)=>e.value = value,options.selectText)
+    }
+
+    async getElementValue(page: Page, options: ElementValueOptions) {
+        const elements = await page.$$(`${options.elementType}`)
+        let element:any
+        if (options.index !== undefined) {
+            element = elements[options.index-1]
+        } else if (options.anchorText !== undefined) {
+            element = await this.ste.getClosestElement(page, options.anchorText, elements)
+        }
+        return await element!.evaluate((e: any) => e.value)
     }
 }

@@ -42,6 +42,14 @@ describe('Test TextApi Integration', () => {
 
     describe('selectText Test', () => {
         it('On Div Selects');
-        it('On Regular Selects');
+        it('On Regular Selects', async function () {
+            const tapi = new textApi()
+            const textForAnchor = "Range input"
+            const selectText = "Option One"
+
+            await tapi.selectText(page, { anchorText: textForAnchor, selectText: selectText }).catch(e => console.log(e))
+            const val = await tapi.getElementValue(page, {anchorText:textForAnchor, elementType:"select"})
+            expect(val).equal(selectText)
+        })
     })
 });

@@ -24,7 +24,10 @@ export class searchTextEngine{
     /**
     Returns center of the rect provided
     */
-    getCenter(rect: any, xOffset:any, yOffset:any) {
+    getCenter(rect: any, xOffset: any, yOffset: any) {
+        /**
+         * Todo: Add option for user to specify position of anchor left, right, top, bottom. default left
+         */
         // console.log("Center::",rect)
         // Do not add width and height as element size can be different resulting in unpredictable behaviour
         return {
