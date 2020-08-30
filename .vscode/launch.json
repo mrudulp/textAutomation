@@ -11,7 +11,7 @@
             "name": "TS Program",
             "program": "${workspaceFolder}/src/main.ts",
             "preLaunchTask": "tsc: build - tsconfig.json",
-            "env": {"PWDEBUG":"1"},
+            "env": {"DEBUG":"pw:api"},
             "outFiles": ["${workspaceFolder}/out/**/*.js"]
         }
 

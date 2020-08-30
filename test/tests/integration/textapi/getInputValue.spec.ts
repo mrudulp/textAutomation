@@ -5,7 +5,7 @@ let page: import('playwright').Page;
 let browser: import('playwright').Browser;
 let context: import('playwright').BrowserContext;
 import { firefox, chromium } from 'playwright'
-import { textApi } from '../../../../src/textapi'
+import { textApi } from '../../../../src/core/textapi'
 import { expect } from 'chai';
 import 'mocha';
 

@@ -4,7 +4,7 @@ let page: import('playwright').Page;
 let browser: import('playwright').Browser;
 let context: import('playwright').BrowserContext;
 import { firefox, chromium } from 'playwright'
-import { textApi } from '../../../../src/textapi'
+import { textApi } from '../../../../src/core/textapi'
 import { expect } from 'chai';
 import 'mocha';
 
@@ -63,10 +63,7 @@ describe('Test TextApi Integration', () => {
             const textToClick = "Visit Google"
             const textToVerify = "Google Search"
 
-            await Promise.all([
-                page.waitForNavigation({waitUntil:"networkidle"}),
-                await tapi.textToClick(page, { textToClick: textToClick }),
-            ]);
+            await tapi.textToClick(page, { textToClick: textToClick, isRedirect:true })
             const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
@@ -77,11 +74,8 @@ describe('Test TextApi Integration', () => {
             const textForAnchor = "Just another Button"
             const textToVerify = "Tired of being tracked online?"
 
-            await Promise.all([
-                page.waitForNavigation({waitUntil:"networkidle"}),
-                await tapi.textToClick(page, {textToClick:textToClick, anchorText: `${textForAnchor}`}),
-            ])
-            const val = await tapi.textToVerify(page, `${textToVerify}`)
+            await tapi.textToClick(page, {textToClick:textToClick, anchorText: textForAnchor, isRedirect: true, timeout:2000 })
+            const val = await tapi.textToVerify(page, textToVerify)
             expect(val).true
         })
         it('On Input of Type Button', async function () {

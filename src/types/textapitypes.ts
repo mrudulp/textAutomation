@@ -16,7 +16,9 @@ export interface ClickTextOptions{
     anchorText?: string,
     textToClick?: string,
     type?: string,
-    index?:number // index of element when multiple elements are found
+    index?: number, // index of element when multiple elements are found
+    isRedirect?: boolean, // Waits for redirection if click initiates redirection/traversal to new page
+    timeout?: number
 }
 
 export interface EnterTextOptions{

@@ -6,7 +6,7 @@ import {
     VerifyTextOptions, ClickTextOptions,
     EnterTextOptions, InputElementOptions,
     SelectOptions, ElementValueOptions
-} from './types/textapitypes'
+} from '../types/textapitypes'
 import { Page } from 'playwright';
 
 export class textApi {
@@ -38,6 +38,9 @@ export class textApi {
      * @param options
      */
     async textToClick(page: Page, options?: ClickTextOptions) {
+            /**
+     * Todo:: Wait For selector option on the page if not timeout
+     */
         let elements: any = []
         let element
         if (options?.textToClick !== undefined) {
@@ -61,7 +64,25 @@ export class textApi {
             console.log("ClickText:: NO ELEMENT FOUND... IGNORING & RETURNING")
             return
         }
-        await element.click();
+        if ( options?.isRedirect === true){
+            await Promise.all([
+                // await page.waitForLoadState('networkidle', ),
+                // page.waitForNavigation({waitUntil:"load"}),
+
+            //  (options.timeout !== undefined) ?
+            //     page.waitForNavigation({waitUntil:'networkidle', timeout: options.timeout }) :
+            //     page.waitForNavigation({ waitUntil: 'networkidle' }),
+            (options.timeout !== undefined) ?
+                page.waitForTimeout(options.timeout): page.waitForTimeout(100),
+
+            (options.timeout !== undefined) ?
+                element.click({ timeout: options.timeout }) :
+                element.click(),
+                // page.waitForNavigation({waitUntil:"load"}),
+                ])
+        } else{
+            await element.click();
+        }
     }
 
     /**

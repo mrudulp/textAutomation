@@ -30,9 +30,13 @@ export class searchTextEngine{
          */
         // console.log("Center::",rect)
         // Do not add width and height as element size can be different resulting in unpredictable behaviour
-        return {
-            x:rect.x + xOffset,
-            y:rect.y + yOffset
+        if (rect) {
+            return {
+                x:rect.x + xOffset,
+                y:rect.y + yOffset
+            }
+        } else {
+            console.log("*** Found an empty or hidden field. Ignoring it ***")
         }
     }
 
@@ -63,8 +67,13 @@ export class searchTextEngine{
     /**
     Returns distance between element that needs action & anchor
     */
-    getDistance (elementRect:any, anchorRect:any){
-        return Math.sqrt(Math.pow((elementRect.x - anchorRect.x), 2) + Math.pow((elementRect.y - anchorRect.y), 2));
+    getDistance(elementRect: any, anchorRect: any) {
+        if (elementRect && anchorRect) {
+            return Math.sqrt(Math.pow((elementRect.x - anchorRect.x), 2) + Math.pow((elementRect.y - anchorRect.y), 2));
+        } else {
+            console.log("Found empty rect. ElementRect::", elementRect, ": AnchorRect::", anchorRect)
+            return Math.pow(10,100) // Return some huge number so that it is not flagged as minimum
+        }
     }
 
     /**
