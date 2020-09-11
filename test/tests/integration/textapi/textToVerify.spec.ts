@@ -4,7 +4,8 @@ let page: import('playwright').Page;
 let browser: import('playwright').Browser;
 let context: import('playwright').BrowserContext;
 import { firefox, chromium } from 'playwright'
-import { textApi } from '../../../../src/core/textapi'
+import { TextApi } from '../../../../src/textapi'
+// import TextApi =  require('../../../../src/textApi');
 import { expect } from 'chai';
 import 'mocha';
 
@@ -38,14 +39,14 @@ describe('Test TextApi Integration', () => {
 
     describe('textToVerify Test', () => {
         it('On Legacy Button', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             let textToVerify = "This is Button"
             const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true
         });
 
         it('On Hyperlink Element', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textToVerify = "This is a text link"
             const val = await tapi.textToVerify(page, `${textToVerify}`)
             expect(val).true

@@ -2,7 +2,8 @@
   "name": "textautomation",
   "version": "0.0.1",
   "description": "Text Automation core",
-  "main": "main.js",
+  "main": "index.js",
+  "typings": "index.d.ts",
   "scripts": {
     "start": "node src/init.js",
     "test": "mocha"

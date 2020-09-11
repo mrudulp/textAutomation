@@ -4,7 +4,8 @@ let page: import('playwright').Page;
 let browser: import('playwright').Browser;
 let context: import('playwright').BrowserContext;
 import { firefox, chromium } from 'playwright'
-import { textApi } from '../../../../src/core/textapi'
+import { TextApi } from '../../../../src/textapi'
+// import TextApi =  require('../../../../src/textApi');
 import { expect } from 'chai';
 import 'mocha';
 
@@ -46,7 +47,7 @@ describe('Test TextApi Integration', () => {
         it('On TextArea', async () => {
             const placeholder = "Enter your message here"
             const textToEnter = "Hello World"
-            const tapi = new textApi()
+            const tapi = new TextApi()
             await tapi.enterText(page, textToEnter, { textToFind: placeholder })
             const val = await tapi.getInputElementValue(page, {placeholder:placeholder})
             expect(val).equal(textToEnter)
@@ -56,9 +57,9 @@ describe('Test TextApi Integration', () => {
             const anchorText = "This is Textarea"
             const placeholder = "Enter your message here"
             const textToEnter = "Hello World"
-            const tapi = new textApi()
+            const tapi = new TextApi()
             // await tapi.enterText(page, textToEnter, { anchorText: anchorText })
-            await tapi.enterText(page, textToEnter, { anchorText: anchorText }).catch(e => console.log(e))
+            await tapi.enterText(page, textToEnter, { anchorText: anchorText }).catch((e: any) => console.log(e))
             const val = await tapi.getInputElementValue(page, {placeholder:placeholder})
             expect(val).equal(textToEnter)
         })
@@ -66,9 +67,9 @@ describe('Test TextApi Integration', () => {
             const anchorText = "Password"
             const placeholder = "Type your Password"
             const textToEnter = "Hello World"
-            const tapi = new textApi()
+            const tapi = new TextApi()
             // await tapi.enterText(page, textToEnter, { anchorText: anchorText })
-            await tapi.enterText(page, textToEnter, { anchorText: anchorText }).catch(e => console.log(e))
+            await tapi.enterText(page, textToEnter, { anchorText: anchorText }).catch((e: any) => console.log(e))
             const val = await tapi.getInputElementValue(page, {placeholder:placeholder})
             expect(val).equal(textToEnter)
         })

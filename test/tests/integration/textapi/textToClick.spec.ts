@@ -1,30 +1,40 @@
 //@ts-check
 
-let page: import('playwright').Page;
-let browser: import('playwright').Browser;
-let context: import('playwright').BrowserContext;
-import { firefox, chromium } from 'playwright'
-import { textApi } from '../../../../src/core/textapi'
+// let page: import('playwright').Page;
+// let browser: import('playwright').Browser;
+// let context: import('playwright').BrowserContext;
+// import { firefox, chromium } from 'playwright'
+import { TextApi } from '../../../../src/textapi'
+// import TextApi =  require('../../../../src/textApi');
 import { expect } from 'chai';
 import 'mocha';
 
 describe('Test TextApi Integration', () => {
     const url = "file:///C:/Users/MrudulPendharkar/devel/devspace/js/textAutomation/test/src/formElements.html"
+    let tapi: any
+    let context: any
+    let page:any
 
     before(async () => {
-        browser = await chromium.launch({ headless: false, slowMo: 10, args: ['--start-fullscreen']  });
+        const browserOptions = { headless: false, slowMo: 10, args: ['--start-fullscreen'] }
+        const browserName = "chrome"
+        tapi = new TextApi()
+        context = await tapi.newBrowserContext(browserName, browserOptions)
+
+        // browser = await chromium.launch({ headless: false, slowMo: 10, args: ['--start-fullscreen']  });
         // Create a context
-        context = await browser.newContext({ acceptDownloads: true });
+        // context = await browser.newContext({ acceptDownloads: true });
     });
 
     after(async () => {
         await context.close()
-        await browser.close();
+        await tapi.closeBrowser();
     });
 
     beforeEach(async () => {
         // Create a page.
-        page = await context.newPage();
+        page = await tapi.newPage(context)
+        // page = await context.newPage();
         await page.goto(url);
     });
 
@@ -39,7 +49,7 @@ describe('Test TextApi Integration', () => {
     })
     describe('textToClick Test', () => {
         it('On Legacy Button', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textToClick = "<button type=button>"
             const textToVerify = "button type=button Clicked"
             await tapi.textToClick(page, { textToClick: textToClick })
@@ -47,7 +57,7 @@ describe('Test TextApi Integration', () => {
             expect(val).true
         });
         it('On Legacy Button using Anchor', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textToClick = "This is Button"
             const textForAnchor = "Just another Button"
             const textToVerify = "Just a Button Clicked"
@@ -59,7 +69,7 @@ describe('Test TextApi Integration', () => {
         });
 
         it('On Hyperlink', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textToClick = "Visit Google"
             const textToVerify = "Google Search"
 
@@ -69,7 +79,7 @@ describe('Test TextApi Integration', () => {
         });
 
         it('On HyperLink using Anchor', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textToClick = "Not Google"
             const textForAnchor = "Just another Button"
             const textToVerify = "Tired of being tracked online?"
@@ -79,7 +89,7 @@ describe('Test TextApi Integration', () => {
             expect(val).true
         })
         it('On Input of Type Button', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textToClick = "<input type=button>"
             const textToVerify = "input type=button"
             await tapi.textToClick(page, { textToClick: textToClick })
@@ -88,7 +98,7 @@ describe('Test TextApi Integration', () => {
         });
 
         it('On Input Button using Anchor', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textToClick = "<input type=button2>"
             const textForAnchor = "Just another Button"
             const textToVerify = "Just an Input Button Clicked"
@@ -100,7 +110,7 @@ describe('Test TextApi Integration', () => {
         });
 
         it('On CheckBox using Anchor', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textForAnchor = "Choice B"
             const type = "checkbox"
 
@@ -113,7 +123,7 @@ describe('Test TextApi Integration', () => {
         });
 
         it('On RadioButton using Anchor', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textForAnchor = "Option 2"
             const type = "radio"
 

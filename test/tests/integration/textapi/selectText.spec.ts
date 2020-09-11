@@ -4,7 +4,8 @@ let page: import('playwright').Page;
 let browser: import('playwright').Browser;
 let context: import('playwright').BrowserContext;
 import { firefox, chromium } from 'playwright'
-import { textApi } from '../../../../src/core/textapi'
+import { TextApi } from '../../../../src/textapi'
+// import TextApi =  require('../../../../src/textApi');
 import { expect } from 'chai';
 import 'mocha';
 
@@ -43,7 +44,7 @@ describe('Test TextApi Integration', () => {
     describe('selectText Test', () => {
         it('On Div Selects');
         it('On Regular Selects', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textForAnchor = "Range input"
             const selectText = "Option One"
 

@@ -1,20 +1,68 @@
 // @ts-check
 /** @type {import('playwright').Page} */
+// /** @type {import('playwright')} */
 import { searchTextEngine } from './searchEngine';
 import { strict as assert } from 'assert';
 import {
     VerifyTextOptions, ClickTextOptions,
     EnterTextOptions, InputElementOptions,
     SelectOptions, ElementValueOptions
-} from '../types/textapitypes'
-import { Page } from 'playwright';
+} from './types/textapitypes'
 
-export class textApi {
+// let page: import('playwright').Page;
+// let browser: import('playwright').Browser;
+// let context: import('playwright').BrowserContext;
+import {Page} from 'playwright'
+import { firefox, chromium } from 'playwright'
+
+// interface ITextApi {
+//     ste: searchTextEngine;
+//     pw: any;
+//     browser: any;
+// }
+
+// interface ITextApiConstructor {
+//     new(): ITextApi
+// }
+
+export class TextApi  {
     ste: searchTextEngine;
+    pw: any;
+    browser: any;
+
+    // page: import('playwright').Page;
+    // browser: import('playwright').Browser;
+    // context: import('playwright').BrowserContext;
+    // browser: any;
     constructor() {
         this.ste = new searchTextEngine();
+        this.pw = require('playwright')
+        this.browser = undefined
     }
 
+    async newPage(context:any) {
+        return context.newPage();
+    }
+
+    async closeBrowser() {
+        return this.browser.close();
+    }
+
+    async newBrowserContext(browserName: string, browserOptions: any) {
+        if (browserName === "chrome"){
+            this.browser = await chromium.launch({ headless: false, slowMo: 10, args: ['--start-fullscreen'] });
+            // Create a context
+            return  this.browser.newContext({ acceptDownloads: true });
+
+        } else if (browserName === "firefox") {
+            console.log("Not Implemented")
+        } else if (browserName === "safari") {
+            console.log("Not Implemented")
+        } else if (browserName === "edge") {
+            console.log("Not Implemented")
+        }
+        return this.pw.BrowserContext
+    }
     /**
      *
      * @param page      Handle to Page
@@ -215,3 +263,7 @@ export class textApi {
         return await element!.evaluate((e: any) => e.value)
     }
 }
+
+// function createTextApi(iTextApi: ITextApiConstructor): ITextApi {
+//     return new iTextApi
+// }

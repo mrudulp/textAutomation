@@ -4,7 +4,8 @@ let page: import('playwright').Page;
 let browser: import('playwright').Browser;
 let context: import('playwright').BrowserContext;
 import { firefox, chromium } from 'playwright'
-import { textApi } from '../../../../src/core/textapi'
+import { TextApi } from '../../../../src/textapi'
+// import TextApi =  require('../../../../src/textApi');
 import { expect } from 'chai';
 import 'mocha';
 
@@ -39,24 +40,24 @@ describe('Test TextApi Integration', () => {
     })
     describe('Range Test', () => {
         it('Set Range', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textForAnchor = "Range input"
             const type = "radio"
 
             let val
-            val = await tapi.getRangeValue(page, {anchorText:textForAnchor}).catch(e=>console.log(e))
+            val = await tapi.getRangeValue(page, {anchorText:textForAnchor}).catch((e: any)=>console.log(e))
             expect(val).equal('10')
-            await tapi.setRangeValue(page, {anchorText:textForAnchor, value:'20'}).catch(e => console.log("E::",e))
-            val = await tapi.getRangeValue(page, {anchorText:textForAnchor}).catch(e=>console.log(e))
+            await tapi.setRangeValue(page, {anchorText:textForAnchor, value:'20'}).catch((e: any) => console.log("E::",e))
+            val = await tapi.getRangeValue(page, {anchorText:textForAnchor}).catch((e: any)=>console.log(e))
             expect(val).equal('20')
         })
 
         it('Get Range', async function () {
-            const tapi = new textApi()
+            const tapi = new TextApi()
             const textForAnchor = "Range input"
             const type = "radio"
 
-            const val = await tapi.getRangeValue(page, {anchorText:textForAnchor}).catch(e=>console.log(e))
+            const val = await tapi.getRangeValue(page, {anchorText:textForAnchor}).catch((e: any)=>console.log(e))
             expect(val).equal('10')
         })
     })
